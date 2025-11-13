@@ -1,0 +1,21 @@
+name: algolia-index
+on:
+  schedule:
+    - cron: "0 */12 * * *"   # toutes les 12 h
+  workflow_dispatch:         # exécution manuelle possible
+jobs:
+  index:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - run: node build-index.mjs
+        env:
+          ALGOLIA_APP_ID: ${{ secrets.ALGOLIA_APP_ID }}
+          ALGOLIA_ADMIN_API_KEY: ${{ secrets.ALGOLIA_ADMIN_API_KEY }}
+          ALGOLIA_INDEX_NAME: iff_pages
+          SITEMAP_URL: https://ifftrendtakeover.com/sitemap.xml
