@@ -1,0 +1,8 @@
+{
+  "type": "module",
+  "dependencies": {
+    "algoliasearch": "^4.23.3",
+    "playwright": "^1.46.0",
+    "fast-xml-parser": "^4.4.0"
+  }
+}
