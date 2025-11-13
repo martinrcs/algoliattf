@@ -1,8 +1,7 @@
 name: algolia-index
 on:
-  schedule:
-    - cron: "0 */12 * * *"   # toutes les 12 h
-  workflow_dispatch:         # exécution manuelle possible
+  schedule: [{ cron: "0 */12 * * *" }]
+  workflow_dispatch:
 jobs:
   index:
     runs-on: ubuntu-latest
@@ -11,11 +10,25 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-      - run: npm ci
-      - run: npx playwright install --with-deps chromium
-      - run: node build-index.mjs
+          cache: 'npm'
+
+      - name: Install deps
+        run: npm install
+
+      - name: Install Playwright Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Preflight env
+        env:
+          ALGOLIA_APP_ID: ${{ secrets.ALGOLIA_APP_ID }}
+          ALGOLIA_ADMIN_API_KEY: ${{ secrets.ALGOLIA_ADMIN_API_KEY }}
+        run: |
+          node -e "if(!process.env.ALGOLIA_APP_ID||!process.env.ALGOLIA_ADMIN_API_KEY){console.error('Missing Algolia secrets');process.exit(1)}"
+
+      - name: Build index
         env:
           ALGOLIA_APP_ID: ${{ secrets.ALGOLIA_APP_ID }}
           ALGOLIA_ADMIN_API_KEY: ${{ secrets.ALGOLIA_ADMIN_API_KEY }}
           ALGOLIA_INDEX_NAME: iff_pages
           SITEMAP_URL: https://ifftrendtakeover.com/sitemap.xml
+        run: node build-index.mjs
