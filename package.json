@@ -1,8 +1,13 @@
 {
+  "name": "iff-indexer",
   "type": "module",
+  "private": true,
+  "scripts": {
+    "index": "node index.mjs",
+    "pw:install": "npx playwright install --with-deps chromium"
+  },
   "dependencies": {
-    "algoliasearch": "^4.23.3",
-    "playwright": "^1.46.0",
-    "fast-xml-parser": "^4.4.0"
+    "algoliasearch": "^5.7.0",
+    "playwright": "^1.48.2"
   }
 }
