@@ -1,6 +1,6 @@
 // index.mjs — indexation mobile par blocs vers Algolia
 import { chromium } from 'playwright';
-import { algoliasearch } from 'algoliasearch';
+import algoliasearch from 'algoliasearch'; 
 
 const BASE = process.env.BASE_URL || 'https://ifftrendtakeover.com';
 const SITEMAP = `${BASE}/sitemap.xml`;
