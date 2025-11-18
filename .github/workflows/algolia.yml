@@ -2,31 +2,31 @@ name: Index mobile blocks to Algolia
 
 on:
   schedule:
-    - cron: "0 */12 * * *"  # toutes les 12h
+    - cron: "0 */12 * * *"
   workflow_dispatch: {}
 
 jobs:
   index:
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    env:
+      BASE_URL: ${{ secrets.BASE_URL }}
+      ALGOLIA_APP_ID: ${{ secrets.ALGOLIA_APP_ID }}
+      ALGOLIA_ADMIN_KEY: ${{ secrets.ALGOLIA_ADMIN_KEY }}
+      ALGOLIA_INDEX: ${{ secrets.ALGOLIA_INDEX }}
     steps:
       - uses: actions/checkout@v4
-
-      - name: Setup Node
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: 20
-
+          cache: 'npm'
       - name: Install deps
         run: npm install --no-audit --no-fund
-
       - name: Install Playwright Chromium
-        run: npm run pw:install
-
+        run: npx playwright install --with-deps chromium
+      - name: Debug env presence (no values)
+        run: |
+          [ -n "$ALGOLIA_APP_ID" ] && echo "ALGOLIA_APP_ID: OK" || (echo "ALGOLIA_APP_ID: MISSING"; exit 1)
+          [ -n "$ALGOLIA_ADMIN_KEY" ] && echo "ALGOLIA_ADMIN_KEY: OK" || (echo "ALGOLIA_ADMIN_KEY: MISSING"; exit 1)
       - name: Run indexer
-        run: npm run index
-        env:
-          BASE_URL: ${{ secrets.BASE_URL }}
-          ALGOLIA_APP_ID: ${{ secrets.ALGOLIA_APP_ID }}
-          ALGOLIA_ADMIN_KEY: ${{ secrets.ALGOLIA_ADMIN_KEY }}
-          ALGOLIA_INDEX: ${{ secrets.ALGOLIA_INDEX }}
+        run: node index.mjs
