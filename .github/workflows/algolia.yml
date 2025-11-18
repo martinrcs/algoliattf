@@ -16,17 +16,23 @@ jobs:
       ALGOLIA_INDEX: ${{ secrets.ALGOLIA_INDEX }}
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: 'npm'
+          # pas de cache ici tant qu'il n'y a pas de package-lock.json
+
       - name: Install deps
         run: npm install --no-audit --no-fund
+
       - name: Install Playwright Chromium
         run: npx playwright install --with-deps chromium
-      - name: Debug env presence (no values)
+
+      - name: Check required env
         run: |
           [ -n "$ALGOLIA_APP_ID" ] && echo "ALGOLIA_APP_ID: OK" || (echo "ALGOLIA_APP_ID: MISSING"; exit 1)
           [ -n "$ALGOLIA_ADMIN_KEY" ] && echo "ALGOLIA_ADMIN_KEY: OK" || (echo "ALGOLIA_ADMIN_KEY: MISSING"; exit 1)
+
       - name: Run indexer
         run: node index.mjs
