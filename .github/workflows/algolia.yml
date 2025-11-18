@@ -18,7 +18,7 @@ jobs:
           node-version: 20
 
       - name: Install deps
-        run: npm ci
+        run: npm install --no-audit --no-fund
 
       - name: Install Playwright Chromium
         run: npm run pw:install
